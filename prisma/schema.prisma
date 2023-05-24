@@ -10,10 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../ERD.png"
+  theme    = "forest"
+}
+
 model Block {
-  index        Int    @id @unique
-  timestamp    String
-  data         String
-  previousHash String
-  hash         String
+  index          Int     @id @unique
+  timestamp      String
+  previousHash   String
+  hash           String
+  value          Decimal
+  senderEntity   User?   @relation("sender", fields: [sender], references: [cpf_cnpj])
+  receiverEntity User?   @relation("receiver", fields: [receiver], references: [cpf_cnpj])
+  sender         String?
+  receiver       String?
+}
+
+model User {
+  cpf_cnpj       String  @id
+  name           String
+  blocksSended   Block[] @relation("sender")
+  blocksReceived Block[] @relation("receiver")
 }
